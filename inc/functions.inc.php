@@ -114,6 +114,7 @@ if (!defined('_FUNCTIONS_INC_PHP_'))
 			{
 				$_COOKIE['login'] = $cookie;
 				$global_current_session = $session;
+				$global_current_session_login_time = time();
 				//writeToLog('cookies sent on '.date('Y m d H:i:s').' for session '.$session.' IP: '.$_SERVER['REMOTE_ADDR'].' Referer: '.$_SERVER['HTTP_REFERER']);
 				return true;
 			}
@@ -121,8 +122,8 @@ if (!defined('_FUNCTIONS_INC_PHP_'))
 		else
 		{
 			$_COOKIE['login'] = $cookie;
-			$global_current_session = $session;
-			return true;
+			$global_current_session = '';
+			return ( getCurrentSession() == $login_session );
 		}
 		return false;
 	}
@@ -170,8 +171,11 @@ if (!defined('_FUNCTIONS_INC_PHP_'))
 	##################################################
 	## stripLSN
 	##################################################
-	function stripLSN($lsn)
+	function stripLSN($lsn, $forceCheck = false)
 	{
+		require_once 'inc/serverinfo.inc.php';
+		if ( MAINTANANCE )
+			return false;
 		$pos = strrpos($lsn, '-');
 		if ( $pos === false )
 			return false;
@@ -180,7 +184,8 @@ if (!defined('_FUNCTIONS_INC_PHP_'))
 		if ( (getCurrentSession() != $session) || ($userID == 0) )
 			return false;
 		$forceCookie = false;
-		if ( ($t = getCurrentSessionLoginTime()) < (time() - 60*60*0.25) )
+		$timeout = (($t = getCurrentSessionLoginTime()) < (time() - 60*60*0.25));
+		if ( $timeout || $forceCheck )
 		{
 			dbconnect();
 			dbq("SELECT session FROM users WHERE ID=$userID");
@@ -192,6 +197,13 @@ if (!defined('_FUNCTIONS_INC_PHP_'))
 		}
 		setCurrentSession($session, $forceCookie);
 		setCurrentUserID($userID);
+		if ( function_exists('stripLSN_callback') )
+		{
+			$backtrace = debug_backtrace();
+			stripLSN_callback($backtrace[1]['function'], $timeout);
+			unset($backtrace);
+		}
+		//writeToLog(s_var_dump(debug_backtrace()));
 		return array($session, $userID);
 	}
 	##################################################
@@ -219,6 +231,9 @@ if (!defined('_FUNCTIONS_INC_PHP_'))
 	function checkIfLogged()
 	{
 		$session = getCurrentSession();
+		$arr = @explode('-', $session); // format: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+		if ( (count($arr) != 5) || (strlen($arr[0]) != 8) || (strlen($arr[1]) != 4) || (strlen($arr[2]) != 4) || (strlen($arr[3]) != 4) || (strlen($arr[4]) != 12) )
+			return false;
 		dbconnect();
 		dbq("SELECT users.ID FROM users WHERE users.session='".dbesc($session)."'");
 		list ($userID) = dbrow(1);
@@ -268,11 +283,30 @@ if (!defined('_FUNCTIONS_INC_PHP_'))
 		dbconnect();
 		setcookie('login' ,'' ,time() - 60*60);
 		setcookie('login' ,false ,time() - 60*60);
-		dbq("UPDATE users SET session='logged out' WHERE session='".dbesc($session)."'");
+		dbq("UPDATE users SET session='logged out ".date(DATE_TIME)."' WHERE session='".dbesc($session)."'");
 		if ( mysql_affected_rows() < 1 )
 			return false;
 		writeToLog("LOGOUT\t$session\t$_SERVER[REMOTE_ADDR]\t".date(DATE_HISTORY));
 		return true;
+	}
+	##################################################
+	## logOutEverybody
+	##################################################
+	function logOutEverybody()
+	{
+		$userID = getCurrentUserID();
+		if ( empty($userID) )
+			$userID = checkIfLogged();
+		if ( $userID == 1 )
+		{
+			dbconnect();
+			dbq("UPDATE users SET session='force logout ".date(DATE_TIME)."' WHERE ID>1");
+			if ( mysql_affected_rows() < 1 )
+				return false;
+			writeToLog("LOGOUT\t-=* ALL *=-\t$_SERVER[REMOTE_ADDR]\t".date(DATE_HISTORY));
+			return true;
+		}
+		return false;
 	}
 	##################################################
 	## magicquotes

@@ -27,9 +27,9 @@ function dumpdie($text, $debug)
 }
 
 require_once 'inc/xajax_core/xajax.inc.php';
-
 # Set "call back to the server" page
 $xajax = new xajax("ajax.server.php");
+require_once 'inc/xajax_plugins/response/dhtmlHistory.inc.php';
 
 // $xajax->configure('defaultMode', 'synchronous');
 // $xajax->configure('debug', true);
@@ -37,13 +37,57 @@ $xajax->configure('errorHandler', true);
 $xajax->configure('logFile', 'Dumps/ajax_dump.txt');
 
 # Here are all the exported functions
-/*# The first way is better, but for faster development i will use the second
 $function_list = array(
-'debug',
+	1=>'waypoint_handler',
+	'load_style',
+	'print_menu',
+	'admin_login',
+	'games',
+	'nrpuzzle',
+	'my_profiles',
+	'rename_profile',
+	'remove_profile',
+	'admin_projects',
+	'admin_groups',
+	'edit_group',
+	'edit_project',
+	'admin_users',
+	'user2app',
+	'edit_user',
+	'home_page',
+	'my_details',
+	'my_settings',
+	'print_filters',
+	'change_profile',
+	'make_default_profile',
+	'save_profile_as',
+	'change_filter',
+	'remove_filter',
+	'add_filter',
+	'print_display',
+	'change_orderby',
+	'change_display',
+	'add_display_before',
+	'remove_display',
+	'print_bug_table',
+	'print_bug',
+	'view_bugs',
+	'edit_bug',
+	'edit_all',
+	'close_bugs',
+	'submit_bugs',
+	'edit_multiple',
+	'change_display_project',
+	'add_bugs',
+	'add_tasks',
+	'search_bugs',
+	'summary_bugs',
+	'statistics',
 );
 /*/
+# this can be used to export all user created functions
 $function_list_before = get_defined_functions();
-require_once 'ajax.functions.inc.php';
+require_once 'ajax.functions.inc.php'; // this include must be removed from ajax.server.php in order for this method 2 work
 $function_list_after = get_defined_functions();
 $function_list = array_diff($function_list_after['user'], $function_list_before['user']);
 /**/

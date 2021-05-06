@@ -93,7 +93,7 @@ function dbdie($txt, $debug)
 }
 function dbconnect($debug = true)
 {
-	require_once('inc/dbconfig.inc.php');
+	require_once('inc/config.inc.php');
 	global $global_mysql_database_link;
 	if ( (isset($global_mysql_database_link) && (!$global_mysql_database_link)) || (!isset($global_mysql_database_link)) )
 		$global_mysql_database_link = @mysql_connect(DATABASE_HOST, DATABASE_LOGIN, DATABASE_PASSWORD) or dbdie('connect', $debug);
@@ -164,7 +164,7 @@ h1 {
 	font-family: Arial;
 	font-weight: 900;
 	text-align: center;
-	letter-spacing: -5px;
+	letter-spacing: -3px;
 	word-spacing: 10px;
 	border-top: 1px solid black;
 	border-bottom: 2px solid black;
@@ -522,11 +522,12 @@ else
 //echo '<pre>';
 //print_r($GLOBALS);
 print_header();
+require_once 'inc/serverinfo.inc.php';
+echo "<h1>".SERVER_NAME." v".SERVER_VERSION." CSV import</h1>";
 ?>
-<h1>Incident List to <img src="/workbench/images/title.png"></h1>
 <form enctype="multipart/form-data" action="<?=$_SERVER['PHP_SELF']?>" method="POST" onSubmit="return addOptionFields(this)">
 <table>
-<tr><td colspan="2" class="center">Input Method I <em>(select the file from your HDD)</em></td></tr>
+<tr><td colspan="2" class="center">Import Method I <em>(select the file from your HDD)</em></td></tr>
 <input class="hidden" type="hidden" name="MAX_FILE_SIZE" value="10485760">
 <tr><td colspan="2" class="center"><hr class="small"></td></tr>
 <tr><td class="alignright">File location:</td><td><input type="file" name="upfile"></td></tr>
@@ -537,7 +538,7 @@ print_header();
 <hr>
 <form action="<?=$_SERVER['PHP_SELF']?>" method="GET" onSubmit="return addOptionFields(this)">
 <table>
-<tr><td colspan="2" class="center">Input Method II <em>(upload to //<?=($_SERVER['SERVER_NAME'].'/'.$_SERVER['DOCUMENT_ROOT'].$dir)?>)</em></td></tr>
+<tr><td colspan="2" class="center">Import Method II <em>(upload to //<?=($_SERVER['SERVER_NAME'].'/'.$_SERVER['DOCUMENT_ROOT'].$dir)?> via LAN)</em></td></tr>
 <input class="hidden" type="hidden" name="t" value="0">
 <tr><td colspan="2" class="center"><hr class="small"></td></tr>
 <tr><td class="alignright">File name only:</td><td><input type="text" class="text" name="i" value="<?=$file_input;?>"></td></tr>

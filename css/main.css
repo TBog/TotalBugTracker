@@ -29,22 +29,25 @@ body {
 	margin-right: auto;
 	width: 100%;
 }
-#logo, #table_logo, #div_logo {
+td {
+	vertical-align: top;
+}
+#div_logo, #logo, #table_logo {
 	height: 106px;
-	background: #417395 url('../img/header_narrow.png') repeat-x;
-	z-index: 3;
 }
 #div_logo, #logo {
+	background: #417395 url('../img/header_narrow.png') repeat-x;
 	padding: 0px 0px 0px 0px;
 	margin: 0px 0px 0px 0px;
 	border: 0px 0px 0px 0px;
+	z-index: 2;
 }
 #div_logo {
 	width: 100%;
 }
 a {
 	color: white;
-	text-decoration: overline underline;
+	text-decoration: none;
 }
 a.bug {
 	color: black;
@@ -61,11 +64,25 @@ a.bug:visited {
 }
 a:hover {
 	color: white;
-	text-decoration: none;
+	text-decoration: overline underline;
 }
 a.bug:hover {
 	color: #1e5781;
 	border: 0px;
+}
+p.maintanance {
+	margin: 5px;
+	padding: 10px;
+	border-style: solid;
+	border-width: 3px;
+	border-color: black;
+	background-color: white;
+	color: black;
+	text-align: center;
+	font-weight: bold;
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
 }
 input, textarea {
 	font-family: Verdana;
@@ -81,6 +98,10 @@ input, textarea {
 	border-bottom-color:#005577;
 	filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr='#00ffffff',EndColorStr='#ff103f69');
 }
+input.edit, textarea.edit {
+	width: 99%;
+	font-weight: normal;
+}
 input.toggle_btn, input.default, input.square, input.filter_btn, input.display_btn, input.page {
 	color: #d5e3eb;
 	font-weight: normal;
@@ -95,8 +116,8 @@ input.square {
 }
 .toggle {
 	margin: 3px;
-	padding: 1px 3px 1px 3px;
-	border: 1px solid #1e5781;
+	padding: 0px;
+	border: 0px solid #1e5781;
 }
 table.simplegrid td, table.simplegrid th {
 	padding: 3px;
@@ -127,6 +148,7 @@ table.filters_toggle, table.display_toggle, table.add_bug, table.bug, table.simp
 }
 table.search td {
 	padding: 3px;
+	vertical-align: middle;
 }
 table.filters_toggle td.filter_options {
 	text-align: right;
@@ -148,7 +170,6 @@ input.add_filter_btn {
 }
 #menu, input.menu, #table_menu {
 	color: #d5e3eb;
-	background-color: #417395;
 	text-align: center;
 }
 #qsearch {
@@ -160,7 +181,7 @@ input.add_filter_btn {
 	width: 40px;
 }
 #menu, #table_menu {
-	width: 90px;
+	width: 95px;
 	padding: 3px;
 	margin: 0px;
 }
@@ -168,8 +189,10 @@ input.add_filter_btn {
 	position: fixed;
 }
 #menu {
-	top: 106px;
+	top: 94px;
+	/*top: 106px;*/
 	left: 0px;
+	z-index: 3;
 }
 #div_logo, #logo {
 	top: 0px;
@@ -198,16 +221,24 @@ input.menu {
 	/*text-decoration: overline underline;*/
 	font-weight: bold;
 	text-align: center;
+	cursor: pointer;
 }
 table {
 	border-collapse: collapse;
 }
-h1 {
+h1, h2 {
 	border: 0px;
-	margin: 0px;
+	margin: 3px 0px 3px 0px;
 	padding: 0px 5px 0px 5px;
+}
+h1 {
 	background-color: #1e5781;
 	font-size: 20px;
+	font-weight: 900;
+}
+h2 {
+	font-size: 17px;
+	font-weight: 900;
 }
 ul {
 	border: 0px;
@@ -251,15 +282,16 @@ select.operator3 {
 	background-color: yellow;
 	border-color: yellow;
 }
-select.project, select.profile, select.display {
+select.project, select.profile, select.display, select.filter {
 	background-color: #417395;
 	border-color: #417395;
 	color: #d5e3eb;
+	margin: 1px 2px 1px 3px;
 }
 div.bug_table {
 	width: 100%;
 	/*overflow: auto;
-	height: 500px;*/
+	height: 490px;*/
 	/*position: relative;	/* to capture the absolutely positioned table header */
 	/*padding-top: 19px;	/* space for the column heads */
 	padding 0px;
@@ -305,10 +337,14 @@ table.bug_table td ,table.bug_table th {
 	padding: 2px;
 	border-left: 0px;
 	border-top: 0px;
+	vertical-align: middle;
 }
 table.bug_table {
 	border-right: 0px;
 	border-bottom: 0px;
+}
+table.bug_table tbody tr:hover {
+	background-color: yellow;
 }
 table.bug_table tbody td:last-child {padding-right: 20px;} /* prevent Mozilla scrollbar from hiding cell content */
 table.login {
@@ -334,6 +370,20 @@ table.login tfoot td {
 	text-align: center;
 	border: 0px;
 }
+table.home {
+	border: 1px dotted #1e5781;
+	margin-bottom: 10px;
+}
+table.home th, table.home td {
+	font-weight: normal;
+	padding: 3px 10px 1px 10px;
+	text-align: center;
+	/*border-left: 1px solid #1e5781;
+	border-right: 1px solid #1e5781;*/
+}
+table.home th {
+	border-bottom: 2px solid #1e5781;
+}
 table.users thead th, table.users tbody td {
 	padding: 3px 5px 1px 5px;
 }
@@ -342,6 +392,18 @@ table.users thead th {
 }
 table.users tbody td {
 	border-bottom: 1px solid #1e5781;
+}
+table.users tbody tr.odd {
+	background-color: #35607B;/*R53 G96 B123*/
+}
+table.edit {
+	width: 100%;
+}
+table.edit tr td {
+	padding: 5px;
+}
+table.edit tr.even td {
+	background-color: #1e5781;
 }
 input:hover {
 	background-color: transparent;

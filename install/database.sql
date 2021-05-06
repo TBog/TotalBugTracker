@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 28, 2008 at 05:47 PM
+-- Generation Time: Feb 10, 2009 at 10:02 AM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.5
 
@@ -12,8 +12,6 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 -- Database: `tbtracker`
 --
-CREATE DATABASE IF NOT EXISTS `tbtracker` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `tbtracker`;
 
 -- --------------------------------------------------------
 
@@ -26,14 +24,8 @@ CREATE TABLE `apps` (
   `appName` varchar(64) NOT NULL,
   `appDesc` varchar(64) NOT NULL,
   `isLocal` enum('Y','N') NOT NULL default 'Y',
-  `appType` enum('bug','asset') NOT NULL default 'bug',
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `apps`
---
-
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -45,20 +37,23 @@ CREATE TABLE `asset_types` (
   `ID` tinyint(3) unsigned NOT NULL auto_increment,
   `typeName` varchar(32) NOT NULL,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `asset_types`
 --
 
 INSERT INTO `asset_types` (`ID`, `typeName`) VALUES
-(1, 'Asset tip unu'),
-(2, 'Asset tip doi'),
-(3, 'asset tip trei'),
-(4, 'asset tip patru'),
-(5, 'asset tip cinci'),
-(6, 'asset tip sase'),
-(7, 'asset tip sapte');
+(1, 'Model texture shader'),
+(2, 'Animation'),
+(3, 'Animation set'),
+(4, 'Next-gen tile texture'),
+(5, 'Menu layouts'),
+(6, 'Fx'),
+(7, 'Sculpt & Texture'),
+(8, 'Sculpt'),
+(9, 'Texture'),
+(10, 'Programming');
 
 -- --------------------------------------------------------
 
@@ -71,7 +66,7 @@ CREATE TABLE `frequency` (
   `frequencyName` varchar(64) NOT NULL,
   `frequencyDesc` varchar(64) NOT NULL,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `frequency`
@@ -93,17 +88,25 @@ INSERT INTO `frequency` (`ID`, `frequencyName`, `frequencyDesc`) VALUES
 CREATE TABLE `groups` (
   `ID` tinyint(4) NOT NULL auto_increment,
   `groupName` varchar(64) NOT NULL,
+  `shortName` varchar(3) NOT NULL,
   `canAssignTo` enum('Y','N') NOT NULL default 'N',
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `groups`
 --
 
-INSERT INTO `groups` (`ID`, `groupName`, `canAssignTo`) VALUES
-(1, 'Administrator', 'N'),
-(2, 'Developer', 'Y');
+INSERT INTO `groups` (`ID`, `groupName`, `shortName`, `canAssignTo`) VALUES
+(1, 'Administrator', 'A', 'N'),
+(2, 'Programming', 'PRG', 'Y'),
+(3, '3D Artist', '3D', 'Y'),
+(4, '2D Artist', '2D', 'Y'),
+(5, 'Sound', 'SND', 'Y'),
+(6, 'Level Design', 'LVL', 'Y'),
+(7, 'Game Design', 'GD', 'Y'),
+(8, 'Project Manager', 'PM', 'Y'),
+(9, 'Engine&Tools', 'ENG', 'Y');
 
 -- --------------------------------------------------------
 
@@ -142,20 +145,16 @@ CREATE TABLE `profiles` (
   `ID` int(10) unsigned NOT NULL auto_increment,
   `userID` int(10) unsigned NOT NULL,
   `profileName` varchar(32) NOT NULL,
-  `profileType` enum('filter','display') NOT NULL,
+  `profileType` enum('bugfilter','bugdisplay','assetfilter','assetdisplay') NOT NULL,
   `profileData` text NOT NULL,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
-
---
--- Dumping data for table `profiles`
---
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 INSERT INTO `profiles` (`ID`, `userID`, `profileName`, `profileType`, `profileData`) VALUES
-(1, 1, 'My bugs', 'filter', 'a:1:{i:0;a:2:{i:0;s:3:"AND";i:1;a:1:{i:0;a:2:{i:0;s:3:"AND";i:1;a:3:{i:0;s:10:"platformID";i:1;s:2:"!=";i:2;s:1:"1";}}}}}'),
-(2, 1, 'My bugs display', 'display', 'a:2:{i:0;s:2:"ID";i:1;s:5:"title";}'),
-(3, 2, 'My bugs', 'filter', 'a:1:{i:0;a:2:{i:0;s:3:"AND";i:1;a:1:{i:0;a:2:{i:0;s:3:"AND";i:1;a:3:{i:0;s:8:"statusID";i:1;s:2:"!=";i:2;i:3;}}}}}'),
-(4, 2, 'My bugs display', 'display', 'a:2:{i:0;s:2:"ID";i:1;s:5:"title";}');
+(1, 1, 'Bugs', 'bugfilter', 'a:1:{i:0;a:2:{i:0;s:3:"AND";i:1;a:1:{i:0;a:2:{i:0;s:3:"AND";i:1;a:3:{i:0;s:10:"assignedTo";i:1;s:1:"=";i:2;s:1:"0";}}}}}'),
+(2, 1, 'Assets', 'assetfilter', 'a:1:{i:0;a:2:{i:0;s:3:"AND";i:1;a:0:{}}}'),
+(3, 1, 'Bugs view', 'bugdisplay', 'a:15:{i:0;s:2:"ID";i:1;s:12:"platformName";i:2;s:11:"versionDate";i:3;s:13:"frequencyName";i:4;s:16:"frequencyPercent";i:5;s:5:"title";i:6;s:14:"assignedToName";i:7;s:12:"closedByName";i:8;s:12:"severityName";i:9;s:10:"statusName";i:10;s:8:"typeName";i:11;s:8:"openDate";i:12;s:9:"closeDate";i:13;s:12:"submitedDate";i:14;s:14:"assToGroupName";}'),
+(4, 1, 'Tasks view', 'assetdisplay', 'a:9:{i:0;s:2:"ID";i:1;s:12:"severityName";i:2;s:12:"platformName";i:3;s:5:"title";i:4;s:8:"typeName";i:5;s:14:"assToGroupName";i:6;s:14:"assignedToName";i:7;s:10:"statusName";i:8;s:12:"deadLineDate";}');
 
 -- --------------------------------------------------------
 
@@ -165,24 +164,20 @@ INSERT INTO `profiles` (`ID`, `userID`, `profileName`, `profileType`, `profileDa
 
 CREATE TABLE `settings` (
   `userID` int(10) unsigned NOT NULL,
-  `sort` varchar(8) NOT NULL,
   `appID` int(10) unsigned NOT NULL default '0',
   `orderBy` varchar(32) NOT NULL,
-  `filterID` int(10) unsigned NOT NULL,
-  `displayID` int(10) unsigned NOT NULL,
+  `bugFilterID` int(10) unsigned NOT NULL,
+  `assetFilterID` int(10) unsigned NOT NULL,
+  `bugDisplayID` int(10) unsigned NOT NULL,
+  `assetDisplayID` int(10) unsigned NOT NULL,
   `bugsPerPage` smallint(5) unsigned NOT NULL default '2000',
-  `emailProfile` int(10) unsigned NOT NULL,
+  `flags` int(10) unsigned NOT NULL default '0',
   `CSS` varchar(128) NOT NULL default 'css/main.css',
   PRIMARY KEY  (`userID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `settings`
---
-
-INSERT INTO `settings` (`userID`, `sort`, `appID`, `orderBy`, `filterID`, `displayID`, `bugsPerPage`, `emailProfile`, `CSS`) VALUES
-(1, '', 0, '', 1, 2, 2000, 0, ''),
-(2, '', 0, '', 3, 4, 2000, 0, 'css/main.css');
+INSERT INTO `settings` (`userID`, `appID`, `orderBy`, `bugFilterID`, `assetFilterID`, `bugDisplayID`, `assetDisplayID`, `bugsPerPage`, `flags`, `CSS`) VALUES
+(1, 0, '', 1, 2, 3, 4, 256, 2, 'css/main.css');
 
 -- --------------------------------------------------------
 
@@ -197,7 +192,7 @@ CREATE TABLE `severity` (
   `severityColor` varchar(16) NOT NULL,
   `severityDesc` varchar(64) NOT NULL,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `severity`
@@ -213,27 +208,62 @@ INSERT INTO `severity` (`ID`, `priority`, `severityName`, `severityColor`, `seve
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `statistics`
+--
+
+CREATE TABLE `statistics` (
+  `ID` int(10) unsigned NOT NULL auto_increment,
+  `statType` enum('hour','day','month','func_hour','func_day','func_month','user_hour','user_day','user_month','user_func') NOT NULL,
+  `statInfo` varchar(32) NOT NULL,
+  `statCount` int(10) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `status`
 --
 
 CREATE TABLE `status` (
   `ID` tinyint(4) unsigned NOT NULL auto_increment,
   `statusName` varchar(32) NOT NULL,
+  `statusColor` varchar(16) NOT NULL,
   `statusDesc` varchar(64) NOT NULL,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `status`
 --
 
-INSERT INTO `status` (`ID`, `statusName`, `statusDesc`) VALUES
-(1, 'Open', ''),
-(2, 'ReOpen', ''),
-(3, 'Closed', ''),
-(4, 'Waived', ''),
-(5, 'NMI', 'Need More Info'),
-(6, 'WNF', 'Will Not Fix');
+INSERT INTO `status` (`ID`, `statusName`, `statusColor`, `statusDesc`) VALUES
+(1, 'Open', '#da6a6a', ''),
+(2, 'ReOpen', '#da6a6a', ''),
+(3, 'Closed', '#eaeaea', ''),
+(4, 'Waived', '#dacaca', ''),
+(5, 'NMI', '#dacaca', 'Need More Info'),
+(6, 'WNF', '#dacaca', 'Will Not Fix'),
+(7, 'Posponed', '#dacaca', 'Work on asset is posponed'),
+(8, 'Working', '#dacaca', ''),
+(9, 'Finished', '#dacaca', 'To Verify');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `status_history`
+--
+
+CREATE TABLE `status_history` (
+  `ID` int(10) unsigned NOT NULL auto_increment,
+  `time` int(10) unsigned NOT NULL,
+  `appID` int(10) unsigned NOT NULL,
+  `bugID` int(10) unsigned NOT NULL default '0',
+  `assetID` int(10) unsigned NOT NULL default '0',
+  `statusID` tinyint(3) unsigned NOT NULL,
+  `userID` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -245,7 +275,7 @@ CREATE TABLE `type` (
   `ID` tinyint(4) unsigned NOT NULL auto_increment,
   `typeName` varchar(32) NOT NULL,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `type`
@@ -274,24 +304,6 @@ INSERT INTO `type` (`ID`, `typeName`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_to_app`
---
-
-CREATE TABLE `user_to_app` (
-  `ID` int(10) unsigned NOT NULL auto_increment,
-  `userID` int(10) unsigned NOT NULL,
-  `appID` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `user_to_app`
---
-
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `users`
 --
 
@@ -304,14 +316,21 @@ CREATE TABLE `users` (
   `session` varchar(36) default NULL,
   `groupID` tinyint(3) unsigned NOT NULL default '0',
   `lastLoginDate` int(10) unsigned NOT NULL default '0',
-  `canAssignTo` enum('Y','N') NOT NULL default 'Y',
+  `privilege` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+INSERT INTO `users` (`ID`, `login`, `name`, `email`, `password`, `session`, `groupID`, `lastLoginDate`, `privilege`) VALUES
+(1, 'TBog', 'Tautu Bogdan', 'thetbog@gmail.com', '1b52e50c9de1e7a1338ede0cc342cfff8dfb6b2092e14b3a02c5cfdca1070653', 'logged out 09.02.09 17:53:49', 1, 1234194829, 30);
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `users`
+-- Table structure for table `user_to_app`
 --
 
-INSERT INTO `users` (`ID`, `login`, `name`, `email`, `password`, `session`, `groupID`, `lastLoginDate`, `canAssignTo`) VALUES
-(1, 'Admin', 'Administrator', 'bogdant@funlabs.com', '1b52e50c9de1e7a1338ede0cc342cfff8dfb6b2092e14b3a02c5cfdca1070653', '085d0377-0eb0-102c-92a3-12bf89729fc5', 1, 1227885489, 'Y'),
-(2, 'mihai', '', '', '1b52e50c9de1e7a1338ede0cc342cfff8dfb6b2092e14b3a02c5cfdca1070653', '4f33edee-0eb0-102c-92a3-12bf89729fc5', 1, 1227885608, 'Y');
+CREATE TABLE `user_to_app` (
+  `ID` int(10) unsigned NOT NULL auto_increment,
+  `userID` int(10) unsigned NOT NULL,
+  `appID` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;

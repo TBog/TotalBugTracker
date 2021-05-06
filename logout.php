@@ -1,5 +1,6 @@
 <?php
 require_once 'inc/functions.inc.php';
+require_once 'inc/serverinfo.inc.php';
 ob_start();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

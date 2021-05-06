@@ -1,2 +1,22 @@
-LOGIN	1	Admin	085d0377-0eb0-102c-92a3-12bf89729fc5	192.168.1.70	Fri 28th November 2008 17:18:09
-LOGIN	2	mihai	4f33edee-0eb0-102c-92a3-12bf89729fc5	192.168.1.97	Fri 28th November 2008 17:20:08
+LOGIN	1	tbog	619c0b63-43dd-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 09:26:55
+ERR	dbqupdate affected = 2; max = Array
+(
+    [273] => 2
+    [272] => 2
+)
+ args = Array
+(
+    [0] => statistics
+    [1] => statCount=statCount+1
+    [2] => statType='user_hour' AND statInfo='1 9'
+    [3] => statType, statInfo
+    [4] => 'user_hour', '1 9'
+)
+
+LOGIN	6	test2	db3fe398-43e7-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 10:41:53
+LOGIN	1	tbog	0398213d-43ed-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 11:18:49
+LOGIN	1	tbog	a6053225-43ed-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 11:23:21
+LOGIN	1	tbog	b20ce53a-43ed-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 11:23:41
+LOGIN	1	tbog	63fd5d96-4418-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 16:29:17
+LOGIN	1	tbog	d72a2cbc-4418-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 16:32:31
+LOGIN	1	tbog	3431e17f-441a-102c-b3a0-83a4ae7b5e66	192.168.1.70	Wed 4th February 2009 16:42:16

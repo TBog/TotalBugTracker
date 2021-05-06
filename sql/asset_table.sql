@@ -1,6 +1,7 @@
 CREATE TABLE `assets%1$s` (
   `ID` int(10) unsigned NOT NULL auto_increment,
   `openDate` int(10) unsigned NOT NULL default '0',
+  `lastEdit` int(10) unsigned NOT NULL default '0',
   `deadLineDate` int(10) unsigned NOT NULL default '0',
   `closeDate` int(10) unsigned NOT NULL default '0',
   `closedBy` int(10) unsigned NOT NULL default '0',
@@ -22,4 +23,4 @@ CREATE TABLE `assets%1$s` (
   `notes` mediumtext NOT NULL,
   `history` mediumtext NOT NULL,
   PRIMARY KEY  (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1

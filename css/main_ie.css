@@ -1,6 +1,21 @@
 #loading {
 	position: absolute;
 }
-#menu, #div_logo, #logo {
+#div_logo, #logo {
 	position: absolute;
 }
+
+/* asta trebuie pentru IE5 ... pe IE7 face probleme
+#table_menu {
+	width: 1% !important; 
+}
+*/
+
+/* DEBUG 
+#menu, #table_menu {
+	border: 1px solid pink;
+}
+#page_table td {
+	border: 1px solid red;
+}
+/* /DEBUG */

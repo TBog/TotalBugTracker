@@ -1,17 +1,42 @@
 function init()
 {
-	//xajax_debug();
-	xajax_load_style(lsn);
-	if (arguments.length == 2)
+	var isset;
+	try{
+		if ( typeof(lsn) == 'undefined' )
+			isset = false;
+		else
+			isset = true;
+	} catch (e)
 	{
-		xajax_print_bug(lsn, arguments[0], arguments[1]);
-		xjx.$('menu').style.display = 'none';
-		xjx.$('table_menu').style.display = 'none';
+		isset = false;
+	}
+	if ( isset )
+	{
+		if ( lsn == 'no lsn' )
+		{
+			alert('It seems you can not log in. (some weird javascript error, try some other browser)');
+			xjx.$('loading').style.display = 'none';
+			return;
+		}
+		xajax_load_style(lsn);
+		if (arguments.length == 2)
+		{
+			xajax_print_bug(lsn, arguments[0], arguments[1]);
+			xjx.$('menu').style.display = 'none';
+			xjx.$('table_menu').style.display = 'none';
+		}
+		else
+			xajax_print_menu(lsn);
+		
+		dhtmlHistoryInit();
 	}
 	else
 	{
-		xajax_print_menu(lsn);
-		xajax_home_page(lsn);
+		lsn = 'no lsn';
+		var arg = '';
+		if (arguments.length == 2)
+			arg = arguments[0] + ', "' + arguments[1] + '"';
+		setTimeout('init(' + arg + ')', 2000);
 	}
 }
 
@@ -28,13 +53,30 @@ function toggle(theID, sOff, sOn)
 	if ( e.style.display == 'none' )
 	{
 		e.style.display = 'block';
-		o.value = sOn;
+		if ( o && o.type == 'button' )
+			o.value = sOn;
 	}
 	else
 	{
 		e.style.display = 'none';
-		o.value = sOff;
+		if ( o && o.type == 'button' )
+			o.value = sOff;
 	}
+}
+
+function get_platforms(sId)
+{	
+	if ( xjx.$(sId) )
+	{
+		var i;
+		var platforms = 0;
+		var e = xjx.$(sId).options;
+		for ( i = 0; i < e.length; i++ ) // iterate through all the options
+			if ( e[i].selected )
+				platforms |= e[i].value;
+		return platforms;
+	}
+	return 0;
 }
 
 function add_bug_verify()
@@ -103,12 +145,12 @@ function add_bug_verify()
 
 function add_asset_verify()
 {
-	var e;
+	var e, i;
 	var must_choose_select = new Object();
 	must_choose_select[0] = 'add_asset_project';
 	must_choose_select[1] = 'add_asset_type';
 	must_choose_select[2] = 'add_asset_severity';
-	must_choose_select[3] = 'add_asset_platform';
+	//must_choose_select[3] = 'add_asset_platform';
 	for (var key in must_choose_select)
 	{
 		e = xjx.$(must_choose_select[key]);
@@ -120,6 +162,12 @@ function add_asset_verify()
 					e.focus();
 					return;
 				}
+	}
+	var platforms = get_platforms('add_asset_platform');
+	if ( platforms == 0 )
+	{
+		alert('Choose platform');
+		return;
 	}
 	if ( (xjx.$('add_asset_group').value == 0) && (xjx.$('add_asset_assign').value == 0) )
 	{
@@ -133,16 +181,31 @@ function add_asset_verify()
 		xjx.$('add_asset_group').focus();
 		return;
 	}
+/*
+	var must_be_date = new Object();
+	must_be_date['add_asset_version'] = 'Build version must have 8 characters';
+	must_be_date['DPC_add_asset_deadline'] = 'Deadline must have 8 characters';
+	must_be_date['DPC_add_asset_opendate'] = 'Open date must have 8 characters';
+	for (var key in must_be_date)
+	{
+		if ( xjx.$(key).value.length != 8 )
+		{
+			alert(must_be_date[key]);
+			xjx.$(key).focus();
+			return;
+		}
+	}
 	if ( xjx.$('add_asset_version').value.length != 8 )
 	{
 		alert('Build version must have 8 characters');
 		xjx.$('add_asset_version').focus();
 		return;
 	}
-	if ( xjx.$('add_asset_deadline').value.length != 8 )
+*/
+	if ( xjx.$('DPC_add_asset_deadline').value.length != 8 )
 	{
 		alert('Deadline must have 8 characters');
-		xjx.$('add_asset_deadline').focus();
+		xjx.$('DPC_add_asset_deadline').focus();
 		return;
 	}
 	if ( xjx.$('add_asset_title').value.length < 1 )
@@ -163,14 +226,16 @@ function add_asset_verify()
 		xjx.$('add_asset_assign').value,
 		xjx.$('add_asset_type').value,
 		xjx.$('add_asset_severity').value,
-		xjx.$('add_asset_platform').value,
-		xjx.$('add_asset_version').value,
-		xjx.$('add_asset_deadline').value,
+		platforms,//xjx.$('add_asset_platform').value,
+		xjx.$('DPC_add_asset_opendate').value,
+		xjx.$('DPC_add_asset_deadline').value,
 		xjx.$('add_asset_title').value,
 		xjx.$('add_asset_description').value,
 		xjx.$('add_asset_notes').value);
 }
-
+/**
+ * not used any more, found non-recursive method
+**/
 function get_chkbox_recursive(obj, size, chked)
 {
 	if ( size < 1 )
@@ -199,15 +264,15 @@ function get_chkbox_recursive(obj, size, chked)
 	return args;
 }
 
-function get_checkboxes(id, func_name)
+function get_checkboxes(id, func_name, bBug)
 {
-	xjx.$('loading').style.display = 'block';
-	var e = xjx.$(id);
-	var o;
-	var len;
 	var args = new Object();
 	var cnt = 0;
 	args[cnt++] = lsn;
+	args[cnt++] = bBug?1:0;
+/*	var e = xjx.$(id);
+	var o;
+	var len;
 	if ( e )
 		if ( o = e.childNodes )
 		{
@@ -216,28 +281,59 @@ function get_checkboxes(id, func_name)
 			for ( var i in r )
 				args[cnt++] = r[i];
 		}
-	args.length = cnt;
+*/
+    var rows = xjx.$(id);
+	if ( rows )
+		rows = rows.getElementsByTagName('tr');
+	else
+		return false;
+    var checkbox;
+
+    for ( var i = 0; i < rows.length; i++ )
+	{
+        checkbox = rows[i].getElementsByTagName( 'input' )[0];
+        if ( checkbox && checkbox.type == 'checkbox' && checkbox.checked && checkbox.id )
+			args[cnt++] = checkbox.id;
+    }
+	
+	args.length = cnt;	
 	return xajax.request( { xjxfun: func_name }, { parameters: args } );
 }
-
+/**
+ * mark checkboxes with 'value', first from every 'tr'
+**/
 function check_all(id, value)
 {
 	if ( value )
 		value = true;
 	else
 		value = false;
-	var e = xjx.$(id);
+/*	var e = xjx.$(id);
 	if ( e )
 		if ( o = e.childNodes )
 		{
 			len = o.length;
 			var r = get_chkbox_recursive(o, len, !value);
-			//~ var rr = get_chkbox_recursive(o, len, value);
+			var rr = get_chkbox_recursive(o, len, value);
 			for ( var i in r )
 				xjx.$(r[i]).checked = value;
-			//~ for ( var i in rr )
-				//~ xjx.$(rr[i]).checked = !value;
+			for ( var i in rr )
+				xjx.$(rr[i]).checked = !value;
 		}
+*/
+    var rows = xjx.$(id);
+	if ( rows )
+		rows = rows.getElementsByTagName('tr');
+	else
+		return false;
+    var checkbox;
+
+    for ( var i = 0; i < rows.length; i++ )
+	{
+        checkbox = rows[i].getElementsByTagName( 'input' )[0];
+        if ( checkbox && checkbox.type == 'checkbox' )
+            checkbox.checked = value;
+    }
 }
 
 function nrpuzzle(size, time, l, c)
@@ -331,4 +427,136 @@ function nrpuzzle(size, time, l, c)
 		xajax_nrpuzzle(size, time, global_nrpuzzle_count, data);
 	}
 	return move_done;
+}
+
+function return_value(sId)
+{
+	if ( xjx.$(sId) )
+		return xjx.$(sId).value;
+	else
+		return "";
+}
+
+function show_date(sDate, sMask)
+{
+	if ( sDate == '' )
+		return 'MM/DD/YY';
+	else if ( sDate.length != 8 )
+		return 'date must have 8 characters';
+	var date = new Date(sDate);
+	if ( date.getFullYear() < 1970 )
+		date.setFullYear(date.getFullYear() + 100);
+	return dateFormat(date, sMask);
+}
+
+function select_option(sId, sOpt)
+{
+	var e = xjx.$(sId);
+	for ( i = 0; i < e.options.length; i++ ) // iterate through all the options
+		if ( e.options[i].value == sOpt )
+		{
+			e.selectedIndex = i;
+			break;
+		}
+}
+// open window with bug/asset details
+function lnk(_this, bBug, id, app)
+{
+	var sPage = '?' + (bBug?'bug':'task') + '=' + id + '&app=' + app;
+	window.open(sPage, '');
+}
+// makes onMouseOver effect for all <tr> within <tbody>
+function make_omo_effect(sTableId)
+{
+	//~ if ( navigator.appName != 'Microsoft Internet Explorer' ) // but only for IE, other browsers are handled by :hover in css
+		//~ return;
+
+	var rows = xjx.$(sTableId).getElementsByTagName('tr');
+	for ( var i = 0; i < rows.length; i++ )
+	{
+		if ( rows[i].parentNode.nodeName.toLowerCase() != 'tbody' )
+			continue;
+
+		if ( navigator.appName == 'Microsoft Internet Explorer' )
+		{
+			rows[i].onmouseover = function()
+			{
+				this.style.color = this.backgroundColor;
+				this.style.backgroundColor = '#ffff00';
+				var tmp = this.getElementsByTagName('input');
+				if ( tmp.length > 0 )
+					tmp[0].focus();
+			}
+			rows[i].onmouseout = function()
+			{
+				this.style.backgroundColor = this.style.color;
+			}
+		}
+		else
+			rows[i].onmouseover = function()
+			{
+				var tmp = this.getElementsByTagName('input');
+				if ( tmp.length > 0 )
+					tmp[0].focus();
+			}
+	}
+}
+
+function move_onclick_from_tr_to_td(sTableId)
+{
+	var rows = xjx.$(sTableId).getElementsByTagName('tr');
+	for ( var i = 0; i < rows.length; i++ )
+	{
+		if ( rows[i].parentNode.nodeName.toLowerCase() != 'tbody' )
+			continue;
+		var cells = rows[i].getElementsByTagName('td');
+		for ( var j = 0; j < cells.length; j++ )
+		{
+			cells[j].onclick = rows[i].onclick;
+			cells[j].style.cursor = "pointer";
+		}
+		rows[i].onclick = function () {};
+	}
+}
+
+function filter2(limitStart, customWhere, bBug)
+{
+	var rows = xjx.$('bug_table').getElementsByTagName('tr');
+	var sel;
+	var query = '1';
+	for ( var i = 0; i < rows.length; i++ )
+	{
+		if ( rows[i].parentNode.nodeName.toLowerCase() != 'thead' )
+			continue;
+		sel = rows[i].getElementsByTagName('select');
+		for ( var j = 0; j < sel.length; j++ )
+		{
+			if ( sel[j].id && sel[j].value )
+			{
+				if ( sel[j].id == 'platformID' )
+					query = query + ' AND (' + sel[j].id + '&' + sel[j].value + ')';
+				else
+					query = query + ' AND ' + sel[j].id + '=' + sel[j].value;
+			}
+			/* debug
+			else
+				alert('id = "' + sel[j].id + '"; value = "' + sel[j].value + '"');
+			*/
+		}
+	}
+	//alert(query);
+	xajax_print_bug_table(lsn, limitStart, customWhere, bBug, query)
+}
+
+function focus4scroll(obj)
+{
+/*
+	var children = obj.getElementsByTagName('input');
+	if ( (children.length > 0) && (navigator.appName.toLowerCase() == 'netscape') )
+	{
+		var scroll = obj.scrollTop;
+		children[0].focus();
+		obj.scrollTop = scroll;
+	}
+*/
 }

@@ -47,7 +47,7 @@ if (!defined('_DBFUNC_INC_PHP_'))
 	}
 	function db_connect($debug = true)
 	{
-		require_once('dbconfig.inc.php');
+		require_once('config.inc.php');
 		global $global_database_link;
 		if ( (!isset($global_database_link)) || (!$global_database_link) )
 			$global_database_link = @mysql_connect(DATABASE_HOST, DATABASE_LOGIN, DATABASE_PASSWORD);
@@ -65,13 +65,15 @@ if (!defined('_DBFUNC_INC_PHP_'))
 			dbdie('query <'.$query.'>', $debug);
 		return $global_mysql_database_query;
 	}
-	function dbrow($numeric = 0)
+	function dbrow($numeric = 0, $query = NULL)
 	{
 		global $global_mysql_database_query;
+		if ( !isset($query) )
+			$query = $global_mysql_database_query;
 		if ( $numeric ) // numeric index only
-			return mysql_fetch_row($global_mysql_database_query);
+			return mysql_fetch_row($query);
 		else
-			return mysql_fetch_assoc($global_mysql_database_query);
+			return mysql_fetch_assoc($query);
 	}
 	function dbr($numeric = 0) // database result into an array
 	{
@@ -87,7 +89,17 @@ if (!defined('_DBFUNC_INC_PHP_'))
 	}
 	function dbesc($string) {
 		global $global_database_link;
-		if ( empty($global_database_link) || version_compare(PHP_VERSION, '4.3.0', '<') )
+		if ( func_num_args() > 1 )
+		{
+			$return = array();
+			for ( $i = 0; $i < func_num_args(); $i += 1 )
+			{
+				$str = func_get_arg($i);
+				$return[] = dbesc($str);
+			}
+			return $return;
+		}
+		elseif ( empty($global_database_link) || version_compare(PHP_VERSION, '4.3.0', '<') )
 			return mysql_escape_string($string);
 		else
 			return mysql_real_escape_string($string, $global_database_link);

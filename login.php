@@ -3,10 +3,11 @@ require_once 'inc/functions.inc.php';
 
 function print_header()
 {
+	require_once('inc/config.inc.php');
 ?><html>
 <head>
 <title>Login page</title>
-<script type="text/javascript" src="inc/functions.js"></script>
+<script type="text/javascript" src="inc/<?php echo FUNCTIONS_JS;?>"></script>
 <link rel="stylesheet" type="text/css" href="css/main.css">
 <!--[if lt IE 7]>
 <link rel="stylesheet" type="text/css" href="css/main_ie.css">
